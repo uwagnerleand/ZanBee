@@ -1,5 +1,5 @@
 /* ZanBee — Catálogo de Vendas com Painel de Administração Integrado */
-import { Switch, Route } from "wouter";
+import { Router, Switch, Route } from "wouter";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminLogin from "./pages/admin/AdminLogin";
 import NotFound from "./pages/NotFound";
+import { getBase } from "./lib/api";
 
 function AdminRoute() {
   const { isAuthenticated, isLoading } = useAdminAuth();
@@ -34,18 +35,27 @@ function AdminRoute() {
 }
 
 export default function App() {
+  const base = getBase();
+
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="light">
         <AdminAuthProvider>
           <TooltipProvider>
             <Toaster position="top-center" richColors />
-            <Switch>
-              <Route path="/" component={Home} />
-              <Route path="/admin/login" component={AdminLogin} />
-              <Route path="/admin" component={AdminRoute} />
-              <Route component={NotFound} />
-            </Switch>
+            <Router base={base}>
+              <Switch>
+                <Route path="/" component={Home} />
+                <Route path="/admin/login" component={AdminLogin} />
+                <Route path="/admin" component={AdminRoute} />
+                {/* Fallback routes for GitHub Pages */}
+                <Route path="/ZanBee" component={Home} />
+                <Route path="/ZanBee/" component={Home} />
+                <Route path="/ZanBee/admin" component={AdminRoute} />
+                <Route path="/ZanBee/admin/login" component={AdminLogin} />
+                <Route component={NotFound} />
+              </Switch>
+            </Router>
           </TooltipProvider>
         </AdminAuthProvider>
       </ThemeProvider>

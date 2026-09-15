@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { Lock, ArrowRight, Eye, EyeOff, Store } from "lucide-react";
 import { toast } from "sonner";
 import { useAdminAuth } from "@/contexts/AdminAuthContext";
@@ -47,9 +47,9 @@ export default function AdminLogin() {
   return (
     <div className="min-h-screen bg-[#fffaf2] text-[#4b2b1d] flex flex-col justify-between selection:bg-[#f4b72b]/40">
       <div className="container py-6 flex items-center justify-between">
-        <a href="/" className="inline-flex items-center gap-2 text-xs font-semibold text-[#8b6a52] hover:text-[#4b2b1d] transition-colors">
+        <Link href="/" className="inline-flex items-center gap-2 text-xs font-semibold text-[#8b6a52] hover:text-[#4b2b1d] transition-colors">
           <Store size={16} /> Voltar para a Vitrine Pública
-        </a>
+        </Link>
       </div>
 
       <div className="flex-1 flex items-center justify-center p-4">

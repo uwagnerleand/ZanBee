@@ -1,0 +1,192 @@
+[
+  {
+    "id": 1,
+    "name": "Conjunto Infantil Floresta",
+    "category": "Meninos",
+    "price": 40,
+    "sizes": [
+      "6 a 7 anos"
+    ],
+    "colors": [
+      "Verde",
+      "Marrom"
+    ],
+    "image": "./images/conjunto-floresta.jpg",
+    "description": "Conjunto infantil da coleção Universo Encantado, com estampa da Turma da Floresta e bermuda confortável.",
+    "badge": "Universo Encantado",
+    "stock": 0,
+    "soldOut": true,
+    "visible": true
+  },
+  {
+    "id": 2,
+    "name": "Conjunto Infantil Homem-Aranha",
+    "category": "Meninos",
+    "price": 40,
+    "sizes": [
+      "6 a 7 anos"
+    ],
+    "colors": [
+      "Vermelho",
+      "Azul"
+    ],
+    "image": "./images/conjunto-aranha.jpg",
+    "description": "Conjunto infantil temático Homem-Aranha da coleção Universo Encantado, confortável e cheio de estilo.",
+    "badge": "Universo Encantado",
+    "stock": 5,
+    "soldOut": false,
+    "visible": true
+  },
+  {
+    "id": 3,
+    "name": "Conjunto Infantil Gamer Loading",
+    "category": "Meninos",
+    "price": 40,
+    "sizes": [
+      "6 a 7 anos"
+    ],
+    "colors": [
+      "Azul",
+      "Vermelho"
+    ],
+    "image": "./images/conjunto-gamer.jpg",
+    "description": "Conjunto infantil gamer da coleção Universo Encantado, com camiseta estilosa e bermuda leve.",
+    "badge": "Universo Encantado",
+    "stock": 4,
+    "soldOut": false,
+    "visible": true
+  },
+  {
+    "id": 4,
+    "name": "Conjunto Infantil Urso Moderno",
+    "category": "Meninos",
+    "price": 40,
+    "sizes": [
+      "6 a 7 anos"
+    ],
+    "colors": [
+      "Azul",
+      "Laranja"
+    ],
+    "image": "./images/conjunto-urso.jpg",
+    "description": "Conjunto infantil descolado da coleção Universo Encantado, com estampa de urso e bermuda vibrante.",
+    "badge": "Universo Encantado",
+    "stock": 0,
+    "soldOut": true,
+    "visible": true
+  },
+  {
+    "id": 5,
+    "name": "Conjunto Infantil Dinossauro Explorer",
+    "category": "Meninos",
+    "price": 40,
+    "sizes": [
+      "6 a 7 anos"
+    ],
+    "colors": [
+      "Preto",
+      "Azul"
+    ],
+    "image": "./images/conjunto-dinossauro.jpg",
+    "description": "Conjunto infantil temático de dinossauro da coleção Universo Encantado, com camiseta preta estampada e bermuda azul.",
+    "badge": "Universo Encantado",
+    "stock": 0,
+    "soldOut": true,
+    "visible": true
+  },
+  {
+    "id": 6,
+    "name": "Conjunto Infantil Happy Bear",
+    "category": "Meninas",
+    "price": 40,
+    "sizes": [
+      "6 a 7 anos"
+    ],
+    "colors": [
+      "Rosa",
+      "Verde"
+    ],
+    "image": "./images/conjunto-esgotado-1.jpg",
+    "description": "Conjunto infantil da coleção Universo Encantado, super charmoso com camiseta de urso e bermuda verde.",
+    "badge": "Esgotado",
+    "stock": 0,
+    "soldOut": true,
+    "visible": true
+  },
+  {
+    "id": 7,
+    "name": "Conjunto Infantil Picolé & Diversão",
+    "category": "Meninas",
+    "price": 40,
+    "sizes": [
+      "6 a 7 anos"
+    ],
+    "colors": [
+      "Amarelo",
+      "Rosa"
+    ],
+    "image": "./images/conjunto-esgotado-2.jpg",
+    "description": "Conjunto leve com camiseta de carrinho de picolé e shorts estampado colorido.",
+    "badge": "Esgotado",
+    "stock": 0,
+    "soldOut": true,
+    "visible": true
+  },
+  {
+    "id": 8,
+    "name": "Conjunto Infantil Doce Morango",
+    "category": "Meninas",
+    "price": 40,
+    "sizes": [
+      "6 a 7 anos"
+    ],
+    "colors": [
+      "Creme",
+      "Vermelho"
+    ],
+    "image": "./images/conjunto-esgotado-3.jpg",
+    "description": "Conjunto infantil delicado com camiseta estampa de morangos e bermuda vermelha.",
+    "badge": "Esgotado",
+    "stock": 0,
+    "soldOut": true,
+    "visible": true
+  },
+  {
+    "id": 9,
+    "name": "Conjunto Infantil Cachorrinho Backpack",
+    "category": "Meninas",
+    "price": 40,
+    "sizes": [
+      "6 a 7 anos"
+    ],
+    "colors": [
+      "Lilás",
+      "Rosa"
+    ],
+    "image": "./images/conjunto-esgotado-4.jpg",
+    "description": "Conjunto fofo com camiseta estampa mochila de cachorrinho corgi e shorts rosa.",
+    "badge": "Esgotado",
+    "stock": 0,
+    "soldOut": true,
+    "visible": true
+  },
+  {
+    "id": 10,
+    "name": "Conjunto Infantil Três Coelhinhos",
+    "category": "Meninas",
+    "price": 40,
+    "sizes": [
+      "6 a 7 anos"
+    ],
+    "colors": [
+      "Rosa",
+      "Verde"
+    ],
+    "image": "./images/conjunto-esgotado-5.jpg",
+    "description": "Conjunto gracioso com estampa de coelhinhos e bermuda verde com corações.",
+    "badge": "Esgotado",
+    "stock": 0,
+    "soldOut": true,
+    "visible": true
+  }
+]
