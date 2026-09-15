@@ -203,7 +203,21 @@ function vitePluginStorageProxy(): Plugin {
   };
 }
 
-const plugins = [react(), tailwindcss(), jsxLocPlugin(), vitePluginManusRuntime(), vitePluginManusDebugCollector(), vitePluginStorageProxy()];
+function vitePluginApi(): Plugin {
+  return {
+    name: "zanbee-api-plugin",
+    async configureServer(server: ViteDevServer) {
+      const express = (await import("express")).default;
+      const { apiRouter } = await import("./server/api");
+      const app = express();
+      app.use(express.json({ limit: "15mb" }));
+      app.use(apiRouter);
+      server.middlewares.use("/api", app);
+    },
+  };
+}
+
+const plugins = [react(), tailwindcss(), jsxLocPlugin(), vitePluginManusRuntime(), vitePluginManusDebugCollector(), vitePluginStorageProxy(), vitePluginApi()];
 
 export default defineConfig({
   base: "./",
