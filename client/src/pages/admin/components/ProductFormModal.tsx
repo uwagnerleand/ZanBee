@@ -81,24 +81,29 @@ export default function ProductFormModal({ product, isOpen, onClose, onSuccess }
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    e.target.value = "";
 
     if (!file.type.startsWith("image/")) {
       toast.error("Por favor, selecione um arquivo de imagem válido.");
       return;
     }
 
-    if (file.size > 15 * 1024 * 1024) {
-      toast.error("A imagem deve ter no máximo 15MB.");
+    if (file.size > 20 * 1024 * 1024) {
+      toast.error("A imagem deve ter no máximo 20MB.");
       return;
     }
 
     setIsUploading(true);
     try {
-      // Comprime automaticamente no navegador para caber direto no Firestore (<100KB)
+      // Comprime rapidamente no navegador (<80KB) para gravar no Firestore
       const compressedDataUrl = await compressImage(file);
+      if (!compressedDataUrl) {
+        toast.error("Não foi possível processar esta imagem.");
+        return;
+      }
       const uploadedUrl = await uploadImage(compressedDataUrl, file.name.replace(/\.[^/.]+$/, ""));
-      setImage(uploadedUrl);
-      toast.success("Foto otimizada e pronta para o banco!");
+      setImage(uploadedUrl || compressedDataUrl);
+      toast.success("Foto carregada com sucesso!");
     } catch (err) {
       console.error("Erro ao enviar a imagem:", err);
       toast.error("Erro ao processar imagem.");

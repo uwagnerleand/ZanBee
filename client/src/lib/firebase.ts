@@ -17,7 +17,7 @@ const DEFAULT_FIREBASE_CONFIG: FirebaseConfigOptions = {
   apiKey: "AIzaSyCW6432-vvSRZlOa48kMTpmlLBw_gVTQ6c",
   authDomain: "catalago-a07e0.firebaseapp.com",
   projectId: "catalago-a07e0",
-  storageBucket: "catalago-a07e0.firebasestorage.app",
+  storageBucket: "", // Salva imagens direto no Firestore Database sem custos
   messagingSenderId: "234094332686",
   appId: "1:234094332686:web:99475f8cdc1ec93dd6a55f",
 };

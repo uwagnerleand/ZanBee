@@ -438,15 +438,23 @@ export async function uploadImage(dataUrl: string, filename?: string): Promise<s
   // Comprime automaticamente para garantir tamanho leve (< 100KB)
   const optimizedDataUrl = await compressImage(dataUrl).catch(() => dataUrl);
 
-  // 1. Tenta Firebase Storage (se tiver bucket configurado)
+  // 1. Tenta Firebase Storage (se configurado), com limite de 2s para nunca travar a tela
   if (storage) {
     try {
       const storageRef = ref(storage, `products/${generatedFilename}`);
-      await uploadString(storageRef, optimizedDataUrl, "data_url");
-      const downloadUrl = await getDownloadURL(storageRef);
+      const uploadTask = (async () => {
+        await uploadString(storageRef, optimizedDataUrl, "data_url");
+        return await getDownloadURL(storageRef);
+      })();
+
+      const timeoutTask = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("Storage timeout")), 2000)
+      );
+
+      const downloadUrl = await Promise.race([uploadTask, timeoutTask]);
       return downloadUrl;
     } catch (err) {
-      console.warn("Firebase Storage indisponível ou exige plano Blaze. Salvando direto no Database (Firestore):", err);
+      console.warn("Storage inativo, sem plano Blaze ou lento. Salvando foto diretamente no Database (Firestore):", err);
     }
   }
 

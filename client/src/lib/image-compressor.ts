@@ -1,29 +1,63 @@
 /**
  * Redimensiona e comprime imagens diretamente no navegador usando HTML5 Canvas.
- * Permite salvar fotos leves (~40KB a 80KB) diretamente como Base64 no Firestore (Database),
- * sem estourar o limite de 1MB por documento e dispensando o plano pago/Blaze do Firebase Storage.
+ * Otimiza fotos pesadas de celulares (5MB a 15MB) para imagens leves (~40KB a 80KB),
+ * prontas para serem gravadas diretamente no Firestore Database.
  */
 export async function compressImage(
   dataUrlOrFile: string | File,
-  maxWidth = 900,
-  maxHeight = 900,
+  maxWidth = 850,
+  maxHeight = 850,
   quality = 0.75
 ): Promise<string> {
-  return new Promise((resolve, reject) => {
-    // Se não for base64 nem arquivo (ex: URL normal ou path relativo), retorna direto
+  return new Promise((resolve) => {
+    // Se não for base64 nem arquivo (ex: URL normal http ou path relativo ./images/...), retorna direto
     if (typeof dataUrlOrFile === "string" && !dataUrlOrFile.startsWith("data:image/")) {
       resolve(dataUrlOrFile);
       return;
     }
 
-    const img = new Image();
-    img.crossOrigin = "anonymous";
+    let resolved = false;
+    let objectUrl: string | null = null;
 
-    const process = () => {
+    const safeResolve = (val: string) => {
+      if (resolved) return;
+      resolved = true;
+      clearTimeout(safetyTimer);
+      if (objectUrl) {
+        try {
+          URL.revokeObjectURL(objectUrl);
+        } catch {}
+      }
+      resolve(val);
+    };
+
+    // Timeout de segurança: nunca deixa a tela travada carregando por mais de 3 segundos
+    const safetyTimer = setTimeout(() => {
+      console.warn("Tempo de processamento da imagem excedeu 3s. Usando fallback rápido.");
+      if (typeof dataUrlOrFile === "string") {
+        safeResolve(dataUrlOrFile);
+      } else {
+        const reader = new FileReader();
+        reader.onload = () => safeResolve((reader.result as string) || "");
+        reader.onerror = () => safeResolve("");
+        reader.readAsDataURL(dataUrlOrFile);
+      }
+    }, 3000);
+
+    const img = new Image();
+
+    // Atenção: NUNCA definir crossOrigin para data: ou blob: URLs, pois causa bloqueio no Chrome/Safari
+    if (typeof dataUrlOrFile === "string" && dataUrlOrFile.startsWith("http")) {
+      img.crossOrigin = "anonymous";
+    }
+
+    img.onload = () => {
       try {
-        let { width, height } = img;
+        let width = img.naturalWidth || img.width;
+        let height = img.naturalHeight || img.height;
+
         if (!width || !height) {
-          resolve(typeof dataUrlOrFile === "string" ? dataUrlOrFile : "");
+          safeResolve(typeof dataUrlOrFile === "string" ? dataUrlOrFile : "");
           return;
         }
 
@@ -44,7 +78,7 @@ export async function compressImage(
         const ctx = canvas.getContext("2d");
 
         if (!ctx) {
-          resolve(typeof dataUrlOrFile === "string" ? dataUrlOrFile : "");
+          safeResolve(typeof dataUrlOrFile === "string" ? dataUrlOrFile : "");
           return;
         }
 
@@ -52,37 +86,41 @@ export async function compressImage(
         ctx.imageSmoothingQuality = "high";
         ctx.drawImage(img, 0, 0, width, height);
 
-        // Tenta WebP primeiro (mais compacto), fallback para JPEG
-        let compressed = canvas.toDataURL("image/webp", quality);
-        if (!compressed || !compressed.startsWith("data:image/webp")) {
-          compressed = canvas.toDataURL("image/jpeg", quality);
-        }
-
-        resolve(compressed);
+        // Gera JPEG otimizado
+        const compressed = canvas.toDataURL("image/jpeg", quality);
+        safeResolve(compressed);
       } catch (err) {
-        console.warn("Falha ao comprimir imagem via Canvas, mantendo original:", err);
-        resolve(typeof dataUrlOrFile === "string" ? dataUrlOrFile : "");
+        console.warn("Canvas falhou ao processar imagem:", err);
+        safeResolve(typeof dataUrlOrFile === "string" ? dataUrlOrFile : "");
       }
     };
 
-    img.onload = process;
-    img.onerror = () => {
+    img.onerror = (err) => {
+      console.warn("Falha ao carregar imagem para o compressor:", err);
       if (typeof dataUrlOrFile === "string") {
-        resolve(dataUrlOrFile);
+        safeResolve(dataUrlOrFile);
       } else {
-        reject(new Error("Não foi possível carregar a imagem para compressão."));
+        const reader = new FileReader();
+        reader.onload = () => safeResolve((reader.result as string) || "");
+        reader.onerror = () => safeResolve("");
+        reader.readAsDataURL(dataUrlOrFile);
       }
     };
 
     if (typeof dataUrlOrFile === "string") {
       img.src = dataUrlOrFile;
     } else {
-      const reader = new FileReader();
-      reader.onload = () => {
-        img.src = reader.result as string;
-      };
-      reader.onerror = (e) => reject(e);
-      reader.readAsDataURL(dataUrlOrFile);
+      try {
+        objectUrl = URL.createObjectURL(dataUrlOrFile);
+        img.src = objectUrl;
+      } catch (err) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          img.src = reader.result as string;
+        };
+        reader.onerror = () => safeResolve("");
+        reader.readAsDataURL(dataUrlOrFile);
+      }
     }
   });
 }
