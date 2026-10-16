@@ -3,6 +3,7 @@ import { X, Upload, Check, AlertCircle, Image as ImageIcon } from "lucide-react"
 import { toast } from "sonner";
 import type { Product } from "@shared/types";
 import { createProduct, updateProduct, uploadImage } from "@/lib/api";
+import { compressImage } from "@/lib/image-compressor";
 
 const PRESET_IMAGES = [
   { label: "Floresta", url: "./images/conjunto-floresta.jpg" },
@@ -86,30 +87,24 @@ export default function ProductFormModal({ product, isOpen, onClose, onSuccess }
       return;
     }
 
-    if (file.size > 8 * 1024 * 1024) {
-      toast.error("A imagem deve ter no máximo 8MB.");
+    if (file.size > 15 * 1024 * 1024) {
+      toast.error("A imagem deve ter no máximo 15MB.");
       return;
     }
 
     setIsUploading(true);
-    const reader = new FileReader();
-    reader.onload = async () => {
-      try {
-        const dataUrl = reader.result as string;
-        const uploadedUrl = await uploadImage(dataUrl, file.name.replace(/\.[^/.]+$/, ""));
-        setImage(uploadedUrl);
-        toast.success("Foto enviada com sucesso!");
-      } catch (err) {
-        toast.error("Erro ao enviar a imagem.");
-      } finally {
-        setIsUploading(false);
-      }
-    };
-    reader.onerror = () => {
+    try {
+      // Comprime automaticamente no navegador para caber direto no Firestore (<100KB)
+      const compressedDataUrl = await compressImage(file);
+      const uploadedUrl = await uploadImage(compressedDataUrl, file.name.replace(/\.[^/.]+$/, ""));
+      setImage(uploadedUrl);
+      toast.success("Foto otimizada e pronta para o banco!");
+    } catch (err) {
+      console.error("Erro ao enviar a imagem:", err);
+      toast.error("Erro ao processar imagem.");
+    } finally {
       setIsUploading(false);
-      toast.error("Erro ao ler o arquivo selecionado.");
-    };
-    reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

@@ -3,7 +3,7 @@ import { useMemo, useState, useEffect } from "react";
 import { Link } from "wouter";
 import { Search, ShoppingBag, Menu, X, ArrowRight, ChevronRight, Heart, MessageCircle, Minus, Plus, Trash2, Check, Instagram, MapPin, Lock } from "lucide-react";
 import { toast } from "sonner";
-import { fetchProducts } from "@/lib/api";
+import { fetchProducts, subscribeToProducts } from "@/lib/api";
 import type { Product } from "@shared/types";
 
 const LOGO = "./images/zanbee-logo.png";
@@ -85,6 +85,16 @@ export default function Home() {
       .catch((err) => {
         console.error("Erro ao carregar produtos:", err);
       });
+
+    const unsub = subscribeToProducts((realtimeProducts) => {
+      if (realtimeProducts && Array.isArray(realtimeProducts) && realtimeProducts.length > 0) {
+        setProductsList(realtimeProducts);
+      }
+    }, false);
+
+    return () => {
+      if (unsub) unsub();
+    };
   }, []);
 
   const filtered = useMemo(() => productsList.filter(p => (category === "Todos" || p.category === category) && p.name.toLowerCase().includes(search.toLowerCase())), [productsList, category, search]);

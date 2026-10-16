@@ -16,12 +16,15 @@ import {
   Minus,
   X,
   AlertTriangle,
+  Database,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { Product } from "@shared/types";
 import { useAdminAuth } from "@/contexts/AdminAuthContext";
-import { fetchProducts, updateProduct, deleteProduct } from "@/lib/api";
+import { fetchProducts, updateProduct, deleteProduct, subscribeToProducts } from "@/lib/api";
+import { isFirebaseConfigured } from "@/lib/firebase";
 import ProductFormModal from "./components/ProductFormModal";
+import FirebaseConfigModal from "./components/FirebaseConfigModal";
 
 const LOGO = "./images/zanbee-logo.png";
 const money = (v: number) =>
@@ -38,6 +41,7 @@ export default function AdminDashboard() {
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isFirebaseModalOpen, setIsFirebaseModalOpen] = useState(false);
 
   // Delete confirmation
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
@@ -57,6 +61,13 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     loadAllProducts();
+    const unsub = subscribeToProducts((realtimeProducts) => {
+      setProducts(realtimeProducts);
+      setIsLoading(false);
+    }, true);
+    return () => {
+      if (unsub) unsub();
+    };
   }, []);
 
   // Filtered products
@@ -194,6 +205,26 @@ export default function AdminDashboard() {
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              onClick={() => setIsFirebaseModalOpen(true)}
+              className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-bold transition-all ${
+                isFirebaseConfigured()
+                  ? "border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100"
+                  : "border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100"
+              }`}
+              title="Configurações do Banco de Dados Online (Firebase)"
+            >
+              <Database size={15} className={isFirebaseConfigured() ? "text-emerald-600" : "text-amber-600"} />
+              <span className="hidden sm:inline">
+                {isFirebaseConfigured() ? "Banco Online Ativo" : "Configurar Banco"}
+              </span>
+              <span
+                className={`w-2 h-2 rounded-full ${
+                  isFirebaseConfigured() ? "bg-emerald-500 animate-pulse" : "bg-amber-500"
+                }`}
+              />
+            </button>
+
             <a
               href="/"
               target="_blank"
@@ -633,6 +664,11 @@ export default function AdminDashboard() {
           </div>
         </div>
       )}
+      {/* Firebase Database Config Modal */}
+      <FirebaseConfigModal
+        isOpen={isFirebaseModalOpen}
+        onClose={() => setIsFirebaseModalOpen(false)}
+      />
     </div>
   );
 }
